@@ -1,1 +1,60 @@
 @import '~node_modules/modern-normalize/modern-normalize.css';
+
+.search-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: darkblue;
+
+    height: 100px;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+input {
+    height: 60px;
+    border: none;
+    border-radius: 10px;
+    margin-right: 15px;
+}
+
+input + button {
+    height: 60px;
+    background-color: white;
+    border-radius: 10px;
+    border: none;
+    
+
+    color: darkblue;
+    font-weight: 600;
+}
+
+.gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+img {
+    display: inline-block;
+    width: 320px;
+}
+
+.info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    width: 320px;
+}
+
+.info-item {
+    display: inline-block;
+    margin: 0;
+}
+
+.photo-card {
+    margin: 10px;
+}

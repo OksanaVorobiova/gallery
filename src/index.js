@@ -42,6 +42,7 @@ async function getImagesData(inputValue) {
   try {
     const searchResponse = await imagesAPI.getImages(inputValue);
     const array = await searchResponse.data.hits;
+    //const totalHits = await searchResponse.data.totalHits;
     return array;
   } catch {
     console.log(error.message);
@@ -55,6 +56,7 @@ function isResponseEmpty(data) {
         return Notify.failure('Sorry, there are no images matching your search query. Please try again.');
     }
   
-    galleryEl.innerHTML = rendering.reduceImagesArrayToMarkup(data);
+  //Notify.success(`Hooray! We found ${data.totalHits} images.`); 
+  galleryEl.innerHTML = rendering.reduceImagesArrayToMarkup(data);
 }
 
