@@ -1,7 +1,8 @@
 import ImagesAPI from './js/api';
 import { Notify } from 'notiflix';
+import rendering from './js/renderMarkup';
 
-
+// Links to the DOM-elements
 
 const refs = {
     formEl: document.getElementById('search-form'),
@@ -11,11 +12,15 @@ const refs = {
 }
 
 const { formEl, inputEl, submitBtn, galleryEl } = refs;
+
+// new specimen of class for work with pixabay API
 const imagesAPI = new ImagesAPI();
 
 formEl.addEventListener('submit', onFormSubmit);
 
-function onFormSubmit(e) {
+
+// handles form submit
+async function onFormSubmit(e) {
     e.preventDefault();
 
     const {
@@ -24,38 +29,32 @@ function onFormSubmit(e) {
         }
     } = e.currentTarget;
 
-    let inputValue = searchQuery.value.trim();
+let inputValue = searchQuery.value.trim();
 
-    imagesAPI.getImages(inputValue).then(isResponseEmpty);
+const imagesArray = await getImagesData(inputValue);
+
+isResponseEmpty(imagesArray);
 }
 
+// returns array of image objects or error
+async function getImagesData(inputValue) {
+
+  try {
+    const searchResponse = await imagesAPI.getImages(inputValue);
+    const array = await searchResponse.data.hits;
+    return array;
+  } catch {
+    console.log(error.message);
+  }
+
+}
+
+// checks if images array is empty; if it is not - makes UI
 function isResponseEmpty(data) {
     if (data.length === 0) {
         return Notify.failure('Sorry, there are no images matching your search query. Please try again.');
     }
-
-    galleryEl.innerHTML = makeGalleryMarkup(data);
+  
+    galleryEl.innerHTML = rendering.reduceImagesArrayToMarkup(data);
 }
 
-function makeGalleryMarkup(data) {
-    return data.map(({ webFormatURL, tags, likes, views, comments, downloads }) => {
-        `<div class="photo-card">
-  <img src="${webFormatURL}" alt="${tags}" loading="lazy" />
-  <div class="info">
-    <p class="info-item">
-      <b>Likes: ${likes}</b>
-    </p>
-    <p class="info-item">
-      <b>Views: ${views}</b>
-    </p>
-    <p class="info-item">
-      <b>Comments: ${comments}</b>
-    </p>
-    <p class="info-item">
-      <b>Downloads: ${downloads}</b>
-    </p>
-  </div>
-</div>`
-    }).join("");
-
-}
