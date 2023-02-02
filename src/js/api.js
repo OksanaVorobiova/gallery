@@ -19,4 +19,12 @@ export default class ImagesAPI {
     set query(value) {
         return this.inputValue = value;
     }
+
+    resetPage() {
+        this.page = 1;
+    }
+
+    incrementPage() {
+        this.page += 1;
+    }
 }
