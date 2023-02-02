@@ -17,7 +17,8 @@ input {
   margin-right: 15px;
 }
 
-input + button {
+input + button,
+.load-more {
   height: 60px;
   background-color: white;
   border-radius: 10px;
@@ -52,6 +53,14 @@ img {
 
 .photo-card {
   margin: 10px;
+}
+
+.load-more {
+  border: 3px solid darkblue;
+}
+
+body {
+  text-align: center;
 }
 
 .example {
