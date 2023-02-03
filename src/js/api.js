@@ -5,6 +5,7 @@ export default class ImagesAPI {
         this.ENDPOINT = `https://pixabay.com/api/`;
         this.inputValue = "";
         this.page = 1;
+
     }
 
     async getImages() {

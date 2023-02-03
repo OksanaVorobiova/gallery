@@ -34,9 +34,11 @@ async function onFormSubmit(e) {
         }
     } = e.currentTarget;
 
-imagesAPI.query = searchQuery.value.trim();
+ imagesAPI.query = searchQuery.value.trim();
 
-isResponseEmpty(await getImagesData());
+  isResponseEmpty(await getImagesData());
+  console.log(imagesAPI.totalHits);
+  Notify.success(`Hooray! We found ${ await (await imagesAPI.getImages()).data.totalHits} images.`); 
 }
 
 // returns array of image objects or error
@@ -48,8 +50,8 @@ async function getImagesData() {
     imagesAPI.incrementPage();
     loadMoreBtn.style.display = 'inline-block';
     
-    //const totalHits = await searchResponse.data.totalHits;
     return array;
+
   } catch {
     console.log(error.message);
   }
