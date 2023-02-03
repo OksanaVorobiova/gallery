@@ -44,9 +44,6 @@ async function getImagesData() {
 
   try {
     const searchResponse = await imagesAPI.getImages();
-
-    isAbleToLoadMore(searchResponse);
-
     const array = await searchResponse.data.hits;
     imagesAPI.incrementPage();
     loadMoreBtn.style.display = 'inline-block';
@@ -67,6 +64,7 @@ function isResponseEmpty(data) {
   
   //Notify.success(`Hooray! We found ${data.totalHits} images.`); 
   galleryEl.insertAdjacentHTML("beforeend", rendering.reduceImagesArrayToMarkup(data));
+  imagesAPI.getImages().then(isAbleToLoadMore).catch(error => console.log(error));
 }
 
 async function onLoadMore(e) {
@@ -77,8 +75,15 @@ function clearGallery() {
   galleryEl.innerHTML = '';
 }
 
+
+
 function isAbleToLoadMore(fetchResult) {
-  if (galleryEl.children.length === fetchResult.data.totalHits) {
-    return Notlify.warning("We're sorry, but you've reached the end of search results.");
-  }
+  setTimeout(() => {
+    if (galleryEl.children.length === fetchResult.data.totalHits) {
+
+      loadMoreBtn.style.display = 'none';
+      return Notify.warning("We're sorry, but you've reached the end of search results.");
+    }
+  }, 1000);
+  
 }
