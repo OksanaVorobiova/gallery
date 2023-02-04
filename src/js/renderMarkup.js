@@ -1,6 +1,7 @@
-function makeGalleryMarkup({ webformatURL, tags, likes, views, comments, downloads }) {
+function makeGalleryMarkup({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) {
 
-     return `<div class="photo-card">
+  return `<a class="link-for-lightbox" href="${largeImageURL}">
+  <div class="photo-card">
   <img src="${webformatURL}" alt="${tags}" loading="lazy" />
   <div class="info">
     <p class="info-item">
@@ -16,7 +17,8 @@ function makeGalleryMarkup({ webformatURL, tags, likes, views, comments, downloa
       <b>Downloads: ${downloads}</b>
     </p>
   </div>
-</div>`
+</div>
+</a>`
 
 }
 

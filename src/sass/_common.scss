@@ -68,3 +68,12 @@ img {
 body {
     text-align: center;
 }
+
+.link-for-lightbox {
+    display: inline-block;
+    text-decoration: none;
+    color: black;
+    margin: 10px;
+    border: 1px solid gray;
+    border-radius: 8px;
+}

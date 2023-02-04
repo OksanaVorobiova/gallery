@@ -2,6 +2,8 @@ import ImagesAPI from './js/api';
 import { Notify } from 'notiflix';
 import rendering from './js/renderMarkup';
 import pagination from './js/loadMoreBtn';
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
 
 // Links to the DOM-elements
 
@@ -16,6 +18,14 @@ const { formEl, submitBtn, galleryEl, loadMoreBtn } = refs;
 
 // new specimen of class for work with pixabay API
 const imagesAPI = new ImagesAPI();
+let lightbox = new SimpleLightbox('.gallery a', {
+    captionsData: 'alt',
+    captionDelay: 250,
+    nav: true,
+});
+
+
+
 
 formEl.addEventListener('submit', onFormSubmit);
 loadMoreBtn.addEventListener('click', onLoadMore);
@@ -37,7 +47,6 @@ async function onFormSubmit(e) {
  imagesAPI.query = searchQuery.value.trim();
 
   isResponseEmpty(await getImagesData());
-  console.log(imagesAPI.totalHits);
   Notify.success(`Hooray! We found ${ await (await imagesAPI.getImages()).data.totalHits} images.`); 
 }
 
@@ -63,9 +72,11 @@ function isResponseEmpty(data) {
     if (data.length === 0) {
         return Notify.failure('Sorry, there are no images matching your search query. Please try again.');
   }
-  
-  //Notify.success(`Hooray! We found ${data.totalHits} images.`); 
+   
   galleryEl.insertAdjacentHTML("beforeend", rendering.reduceImagesArrayToMarkup(data));
+  const { height: cardHeight } = galleryEl.firstElementChild.getBoundingClientRect();
+  scroll(cardHeight);
+  lightbox.refresh();
   imagesAPI.getImages().then(isAbleToLoadMore).catch(error => console.log(error));
 }
 
@@ -88,4 +99,12 @@ function isAbleToLoadMore(fetchResult) {
     }
   }, 1000);
   
+}
+
+
+function scroll(cardHeight) {
+  window.scrollBy({
+    top: cardHeight * 2,
+    behavior: "smooth",
+  });
 }
