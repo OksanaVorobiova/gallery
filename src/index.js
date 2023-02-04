@@ -38,16 +38,22 @@ async function onFormSubmit(e) {
         elements: {
             searchQuery
         }
-    } = e.currentTarget;
-
-  imagesAPI.query = searchQuery.value.trim();
-
-  isResponseEmpty(await getImagesData());
-
-  if (imagesAPI.totalHits) {
-    Notify.success(`Hooray! We found ${imagesAPI.totalHits} images.`); 
-  }
+  } = e.currentTarget;
   
+  console.log(searchQuery.value);
+
+  
+  imagesAPI.query = searchQuery.value.trim();
+  
+  if (!imagesAPI.inputValue) {
+    Notify.warning('Enter something');
+  } else {
+    isResponseEmpty(await getImagesData());
+
+    if (imagesAPI.totalHits) {
+     Notify.success(`Hooray! We found ${imagesAPI.totalHits} images.`); 
+   }
+  } 
 }
 
 // returns array of image objects or error
@@ -73,8 +79,6 @@ function isResponseEmpty(data) {
       
     galleryEl.insertAdjacentHTML("beforeend", rendering.reduceImagesArrayToMarkup(data));
 
-    const { height: cardHeight } = galleryEl.firstElementChild.getBoundingClientRect();
-    scroll(cardHeight);
     lightbox.refresh();
 
     isAbleToLoadMore();
@@ -92,6 +96,8 @@ function isResponseEmpty(data) {
 // on loadMoreBtn click
 async function onLoadMore(e) {
   isResponseEmpty(await getImagesData());
+  const { height: cardHeight } = galleryEl.firstElementChild.getBoundingClientRect();
+  scroll(cardHeight);
 }
 
 
@@ -103,14 +109,14 @@ function clearGallery() {
 
 // checks if there are images remained in response
 function isAbleToLoadMore() {
-  setTimeout(() => {
     if (galleryEl.children.length === imagesAPI.totalHits) {
 
       loadMoreBtn.style.display = 'none';
-      return Notify.warning("We're sorry, but you've reached the end of search results.");
-    }
-  }, 1000);
-  
+      setTimeout(() => {
+         Notify.warning("We're sorry, but you've reached the end of search results.");
+      }, 500);
+     
+    } 
 }
 
 // scrolls document to new images rendered 
