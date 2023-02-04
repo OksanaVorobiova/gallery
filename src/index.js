@@ -1,7 +1,6 @@
 import ImagesAPI from './js/api';
 import { Notify } from 'notiflix';
 import rendering from './js/renderMarkup';
-import pagination from './js/loadMoreBtn';
 import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
 
@@ -9,14 +8,13 @@ import "simplelightbox/dist/simple-lightbox.min.css";
 
 const refs = {
   formEl: document.getElementById('search-form'),
-  submitBtn: document.querySelector('button[type="submit"]'),
   galleryEl: document.querySelector('.gallery'),
   loadMoreBtn: document.querySelector('.load-more'),
 }
 
-const { formEl, submitBtn, galleryEl, loadMoreBtn } = refs;
+const { formEl, galleryEl, loadMoreBtn } = refs;
 
-// new specimen of class for work with pixabay API
+// new specimen of class for work with pixabay API and lightbox config
 const imagesAPI = new ImagesAPI();
 let lightbox = new SimpleLightbox('.gallery a', {
     captionsData: 'alt',
@@ -24,9 +22,7 @@ let lightbox = new SimpleLightbox('.gallery a', {
     nav: true,
 });
 
-
-
-
+// event listeners
 formEl.addEventListener('submit', onFormSubmit);
 loadMoreBtn.addEventListener('click', onLoadMore);
 
@@ -47,7 +43,11 @@ async function onFormSubmit(e) {
  imagesAPI.query = searchQuery.value.trim();
 
   isResponseEmpty(await getImagesData());
-  Notify.success(`Hooray! We found ${ await (await imagesAPI.getImages()).data.totalHits} images.`); 
+
+  if ((await imagesAPI.getImages()).data.totalHits) {
+    Notify.success(`Hooray! We found ${ (await imagesAPI.getImages()).data.totalHits} images.`); 
+  }
+  
 }
 
 // returns array of image objects or error
@@ -69,27 +69,40 @@ async function getImagesData() {
 
 // checks if images array is empty; if it is not - makes UI
 function isResponseEmpty(data) {
-    if (data.length === 0) {
-        return Notify.failure('Sorry, there are no images matching your search query. Please try again.');
+  if (data.length !== 0) {
+      
+    galleryEl.insertAdjacentHTML("beforeend", rendering.reduceImagesArrayToMarkup(data));
+
+    const { height: cardHeight } = galleryEl.firstElementChild.getBoundingClientRect();
+    scroll(cardHeight);
+    lightbox.refresh();
+
+    imagesAPI.getImages().then(isAbleToLoadMore).catch(error => console.log(error));
+      
+
+    } else {
+    loadMoreBtn.style.display = 'none';
+    Notify.failure('Sorry, there are no images matching your search query. Please try again.');
+    return;
   }
    
-  galleryEl.insertAdjacentHTML("beforeend", rendering.reduceImagesArrayToMarkup(data));
-  const { height: cardHeight } = galleryEl.firstElementChild.getBoundingClientRect();
-  scroll(cardHeight);
-  lightbox.refresh();
-  imagesAPI.getImages().then(isAbleToLoadMore).catch(error => console.log(error));
+ 
 }
 
+
+// on loadMoreBtn click
 async function onLoadMore(e) {
   isResponseEmpty(await getImagesData());
 }
 
+
+// makes gallery empty on the new query
 function clearGallery() {
   galleryEl.innerHTML = '';
 }
 
 
-
+// checks if there are images remained in response
 function isAbleToLoadMore(fetchResult) {
   setTimeout(() => {
     if (galleryEl.children.length === fetchResult.data.totalHits) {
@@ -101,7 +114,7 @@ function isAbleToLoadMore(fetchResult) {
   
 }
 
-
+// scrolls document to new images rendered 
 function scroll(cardHeight) {
   window.scrollBy({
     top: cardHeight * 2,
