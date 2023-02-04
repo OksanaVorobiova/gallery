@@ -40,12 +40,12 @@ async function onFormSubmit(e) {
         }
     } = e.currentTarget;
 
- imagesAPI.query = searchQuery.value.trim();
+  imagesAPI.query = searchQuery.value.trim();
 
   isResponseEmpty(await getImagesData());
 
-  if ((await imagesAPI.getImages()).data.totalHits) {
-    Notify.success(`Hooray! We found ${ (await imagesAPI.getImages()).data.totalHits} images.`); 
+  if (imagesAPI.totalHits) {
+    Notify.success(`Hooray! We found ${imagesAPI.totalHits} images.`); 
   }
   
 }
@@ -77,8 +77,7 @@ function isResponseEmpty(data) {
     scroll(cardHeight);
     lightbox.refresh();
 
-    imagesAPI.getImages().then(isAbleToLoadMore).catch(error => console.log(error));
-      
+    isAbleToLoadMore();
 
     } else {
     loadMoreBtn.style.display = 'none';
@@ -103,9 +102,9 @@ function clearGallery() {
 
 
 // checks if there are images remained in response
-function isAbleToLoadMore(fetchResult) {
+function isAbleToLoadMore() {
   setTimeout(() => {
-    if (galleryEl.children.length === fetchResult.data.totalHits) {
+    if (galleryEl.children.length === imagesAPI.totalHits) {
 
       loadMoreBtn.style.display = 'none';
       return Notify.warning("We're sorry, but you've reached the end of search results.");
