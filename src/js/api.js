@@ -1,32 +1,44 @@
 const axios = require('axios').default;
 
 export default class ImagesAPI {
-    constructor() {
-        this.ENDPOINT = `https://pixabay.com/api/`;
-        this.inputValue = "";
-        this.page = 1;
-        this.totalHits = 0;
-    }
+  constructor() {
+    this.ENDPOINT = `https://pixabay.com/api/`;
+    this.inputValue = '';
+    this.page = 1;
+    this.totalHits = 0;
+    this.API_KEY = '33272979-e2ed5d1fd8a361bfa8249b6ef';
+  }
 
-    async getImages() {
-        const fetchImages = await axios.get(`${this.ENDPOINT}?key=33272979-e2ed5d1fd8a361bfa8249b6ef&q=${this.inputValue}&image_type=photo&orientation=horizontal&safesearch=true&page=${this.page}&per_page=40`);
-        this.totalHits = fetchImages.data.totalHits;
-        return fetchImages;
-    }
+  async getImages() {
+    const fetchImages = await axios.get(
+      `${this.ENDPOINT}?key=${this.API_KEY}&q=${this.inputValue}&image_type=photo&orientation=horizontal&safesearch=true&page=${this.page}&per_page=40`
+    );
+    this.totalHits = fetchImages.data.totalHits;
+    return fetchImages;
+  }
 
-    get query() {
-        return this.inputValue;
-    }
+  async getPopularImages() {
+    const popularImages = await axios.get(
+      `${this.ENDPOINT}?key=${this.API_KEY}&image_type=photo&orientation=horizontal&safesearch=true&page=${this.page}&per_page=40`
+    );
+    console.log(popularImages);
+    this.totalHits = popularImages.data.totalHits;
+    return popularImages;
+  }
 
-    set query(value) {
-        return this.inputValue = value;
-    }
+  get query() {
+    return this.inputValue;
+  }
 
-    resetPage() {
-        this.page = 1;
-    }
+  set query(value) {
+    return (this.inputValue = value);
+  }
 
-    incrementPage() {
-        this.page += 1;
-    }
+  resetPage() {
+    this.page = 1;
+  }
+
+  incrementPage() {
+    this.page += 1;
+  }
 }
